@@ -45,42 +45,35 @@ export default function PortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-mesh flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative blurred blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse-soft"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse-soft" style={{ animationDelay: '1s' }}></div>
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
+      <div className="max-w-2xl w-full animate-slide-up">
+        <div className="bg-white rounded-2xl overflow-hidden border-2 border-slate-200">
 
-      <div className="max-w-2xl w-full z-10 animate-slide-up">
-        <div className="glass-panel rounded-3xl overflow-hidden">
-          
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-10 py-10 text-white text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-            <div className="relative z-10">
-              <div className="mx-auto bg-white/20 w-16 h-16 flex items-center justify-center rounded-2xl mb-4 backdrop-blur-md border border-white/30 shadow-lg">
-                <HelpCircle size={32} className="text-white" />
-              </div>
-              <h1 className="text-4xl font-bold tracking-tight mb-2 drop-shadow-sm">IT Support Portal</h1>
-              <p className="text-blue-100 text-lg font-medium opacity-90">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
+          <div className="bg-blue-600 px-10 py-10 text-white text-center">
+            <div className="mx-auto bg-blue-700 w-16 h-16 flex items-center justify-center rounded-2xl mb-4 border-2 border-blue-500">
+              <HelpCircle size={32} className="text-white" />
             </div>
+            <h1 className="text-4xl font-bold tracking-tight mb-2">IT Support Portal</h1>
+            <p className="text-blue-100 text-lg font-semibold">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
           </div>
-          
+
           <div className="p-10">
             {success && (
-              <div className="mb-8 p-5 bg-green-50/80 backdrop-blur-md text-green-700 rounded-2xl border border-green-200 flex items-center gap-3 animate-fade-in shadow-sm">
-                <CheckCircle2 size={24} className="text-green-500 flex-shrink-0" />
+              <div className="mb-8 p-5 bg-green-50 text-green-800 rounded-2xl border-2 border-green-300 flex items-center gap-3 animate-fade-in">
+                <CheckCircle2 size={24} className="text-green-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold">Gửi yêu cầu thành công!</h4>
-                  <p className="text-sm text-green-600 mt-1">Đội ngũ IT đã nhận được thông tin và sẽ xử lý sớm nhất.</p>
+                  <h4 className="font-bold">Gửi yêu cầu thành công!</h4>
+                  <p className="text-sm text-green-700 mt-1">Đội ngũ IT đã nhận được thông tin và sẽ xử lý sớm nhất.</p>
                 </div>
               </div>
             )}
-            
+
             {errorMsg && (
-              <div className="mb-8 p-5 bg-red-50/80 backdrop-blur-md text-red-700 rounded-2xl border border-red-200 flex items-center gap-3 animate-fade-in shadow-sm">
-                <AlertCircle size={24} className="text-red-500 flex-shrink-0" />
+              <div className="mb-8 p-5 bg-red-50 text-red-800 rounded-2xl border-2 border-red-300 flex items-center gap-3 animate-fade-in">
+                <AlertCircle size={24} className="text-red-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold">Không thể gửi yêu cầu</h4>
-                  <p className="text-sm text-red-600 mt-1">{errorMsg}</p>
+                  <h4 className="font-bold">Không thể gửi yêu cầu</h4>
+                  <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
                 </div>
               </div>
             )}
@@ -96,7 +89,7 @@ export default function PortalPage() {
                     id="title"
                     name="title"
                     placeholder="VD: Không thể kết nối WiFi ở tầng 3"
-                    className="w-full px-5 py-4 rounded-xl border border-slate-200/60 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white/50 focus:bg-white outline-none shadow-sm placeholder:text-slate-400 font-medium text-slate-800"
+                    className="w-full px-5 py-4 rounded-xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-colors bg-white outline-none placeholder:text-slate-400 font-semibold text-slate-900"
                     required
                   />
                 </div>
@@ -110,7 +103,7 @@ export default function PortalPage() {
                     id="reporter_name"
                     name="reporter_name"
                     placeholder="VD: Nguyễn Văn A"
-                    className="w-full px-5 py-4 rounded-xl border border-slate-200/60 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white/50 focus:bg-white outline-none shadow-sm placeholder:text-slate-400 font-medium text-slate-800"
+                    className="w-full px-5 py-4 rounded-xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-colors bg-white outline-none placeholder:text-slate-400 font-semibold text-slate-900"
                   />
                 </div>
 
@@ -122,7 +115,7 @@ export default function PortalPage() {
                     <select
                       id="priority"
                       name="priority"
-                      className="w-full px-5 py-4 rounded-xl border border-slate-200/60 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white/50 focus:bg-white outline-none appearance-none shadow-sm font-medium text-slate-800 cursor-pointer"
+                      className="w-full px-5 py-4 rounded-xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-colors bg-white outline-none appearance-none font-semibold text-slate-900 cursor-pointer"
                     >
                       <option value="Low">🟢 Low - Không gấp</option>
                       <option value="Medium" selected>🟡 Medium - Bình thường</option>
@@ -144,23 +137,23 @@ export default function PortalPage() {
                     name="description"
                     rows={4}
                     placeholder="Mô tả chi tiết vấn đề bạn đang gặp phải. Bạn đã thử khởi động lại chưa? Màn hình hiện lỗi gì?..."
-                    className="w-full px-5 py-4 rounded-xl border border-slate-200/60 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white/50 focus:bg-white outline-none resize-none shadow-sm placeholder:text-slate-400 font-medium text-slate-800"
+                    className="w-full px-5 py-4 rounded-xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-colors bg-white outline-none resize-none placeholder:text-slate-400 font-semibold text-slate-900"
                     required
                   ></textarea>
                 </div>
               </div>
 
-              <div className="pt-8 mt-4 flex items-center justify-between border-t border-slate-200/60">
-                <a href="/dashboard" className="text-sm text-slate-500 hover:text-blue-600 font-semibold transition-colors flex items-center gap-2 group">
-                  <span className="bg-slate-100 group-hover:bg-blue-100 p-2 rounded-full transition-colors">
-                    <Activity size={16} className="text-slate-600 group-hover:text-blue-600" />
+              <div className="pt-8 mt-4 flex items-center justify-between border-t-2 border-slate-200">
+                <a href="/dashboard" className="text-sm text-slate-700 hover:text-blue-600 font-bold transition-colors flex items-center gap-2 group">
+                  <span className="bg-slate-200 group-hover:bg-blue-100 p-2 rounded-full transition-colors">
+                    <Activity size={16} className="text-slate-700 group-hover:text-blue-600" />
                   </span>
                   Dashboard Quản lý
                 </a>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-2"
+                  className="px-8 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-bold rounded-xl transition-colors active:scale-95 flex items-center gap-2"
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
@@ -176,7 +169,7 @@ export default function PortalPage() {
           </div>
         </div>
         
-        <p className="text-center text-slate-500 text-sm mt-6 font-medium">
+        <p className="text-center text-slate-600 text-sm mt-6 font-semibold">
           IT Support System v0.1 • Powered by Gemini AI
         </p>
       </div>

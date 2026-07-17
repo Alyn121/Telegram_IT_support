@@ -7,6 +7,7 @@ CREATE TABLE tickets (
   status TEXT CHECK (status IN ('New','In Progress','Resolved','Escalated')) DEFAULT 'New',
   source TEXT CHECK (source IN ('portal','telegram')) NOT NULL,
   reporter_name TEXT,
+  reporter_telegram_id BIGINT,
   telegram_message_id BIGINT UNIQUE,
   original_text TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),

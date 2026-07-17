@@ -15,7 +15,7 @@
 /* Force light mode for MVP */
 
 body {
-  background: var(--background);
+  background: #f1f5f9;
   color: var(--foreground);
   font-family: 'Inter', Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -46,23 +46,6 @@ body {
   animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Glassmorphism Utilities */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.05);
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -79,15 +62,3 @@ body {
   background: #94a3b8;
 }
 
-/* Mesh gradient backgrounds */
-.bg-mesh {
-  background-color: #f8fafc;
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
-}
-
-.bg-gradient-blue {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-}

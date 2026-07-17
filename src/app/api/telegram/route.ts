@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseTicketFromText } from '@/lib/gemini'
 import { createAdminClient } from '@/lib/supabase'
+import { STATUS_META, TicketStatus } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,11 +26,33 @@ export async function POST(req: NextRequest) {
 
 async function processMessage(msg: any) {
   console.log(`[PIPELINE] [1. received] telegram_message_id=${msg.message_id} text="${msg.text?.substring(0, 30)}..."`)
-  
+
+  const statusMatch = msg.text.trim().match(/^\/status\s+(\S+)/i)
+  if (statusMatch) {
+    await replyTicketStatus(msg.chat.id, statusMatch[1], msg.message_id)
+    return
+  }
+
   // 1. Parse using Gemini
   const parsed = await parseTicketFromText(msg.text)
   console.log(`[PIPELINE] [2. parsed] result=`, parsed)
-  
+
+  // Gemini failed (quota/network/invalid JSON) - do NOT silently create a garbage ticket from a failed parse.
+  if (parsed.error) {
+    console.error(`[PIPELINE] [2b. gemini_error] telegram_message_id=${msg.message_id} error=${parsed.error}`)
+    await sendTelegramMessage(msg.chat.id, `⚠️ Hệ thống AI đang tạm thời gặp sự cố, chưa thể xử lý tin nhắn của bạn. Vui lòng thử lại sau ít phút. (Ticket CHƯA được ghi nhận)`, msg.message_id)
+    return
+  }
+
+  if (parsed.intent === 'check_status') {
+    if (parsed.ticket_id) {
+      await replyTicketStatus(msg.chat.id, String(parsed.ticket_id), msg.message_id)
+    } else {
+      await replyMyTickets(msg.chat.id, msg.from?.id, msg.message_id)
+    }
+    return
+  }
+
   if (parsed.is_off_topic) {
     console.log(`[PIPELINE] [3. off_topic_ignored] telegram_message_id=${msg.message_id}`)
     await sendTelegramMessage(msg.chat.id, `👋 Chào bạn, bot IT Support chỉ tiếp nhận các yêu cầu liên quan đến máy tính, mạng, phần mềm hoặc cấp quyền. Xin vui lòng mô tả vấn đề IT bạn đang gặp phải nhé!`, msg.message_id)
@@ -59,6 +82,7 @@ async function processMessage(msg: any) {
       category,
       source: 'telegram',
       reporter_name: reporterName,
+      reporter_telegram_id: msg.from?.id ?? null,
       telegram_message_id: msg.message_id,
       original_text: msg.text,
       status: 'New'
@@ -91,6 +115,59 @@ async function processMessage(msg: any) {
     }
     await sendTelegramMessage(msg.chat.id, responseText, msg.message_id)
   }
+}
+
+async function replyTicketStatus(chatId: number, ticketId: string, replyToMessageId?: number) {
+  const supabase = createAdminClient()
+  const { data: ticket, error } = await supabase
+    .from('tickets')
+    .select('id, title, status, updated_at')
+    .eq('id', ticketId)
+    .single()
+
+  if (error || !ticket) {
+    await sendTelegramMessage(chatId, `❌ Không tìm thấy ticket #${ticketId}.`, replyToMessageId)
+    return
+  }
+
+  const meta = STATUS_META[ticket.status as TicketStatus] || { label: ticket.status }
+  const updatedStr = new Date(ticket.updated_at).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+
+  let text = `📋 <b>Ticket #${ticket.id}</b>\n`
+  text += `<b>Tiêu đề:</b> ${ticket.title}\n`
+  text += `<b>Trạng thái:</b> ${meta.label}\n`
+  text += `<b>Cập nhật lần cuối:</b> ${updatedStr}`
+
+  await sendTelegramMessage(chatId, text, replyToMessageId)
+}
+
+async function replyMyTickets(chatId: number, telegramUserId: number | undefined, replyToMessageId?: number) {
+  if (!telegramUserId) {
+    await sendTelegramMessage(chatId, `❌ Không xác định được tài khoản Telegram của bạn.`, replyToMessageId)
+    return
+  }
+
+  const supabase = createAdminClient()
+  const { data: tickets, error } = await supabase
+    .from('tickets')
+    .select('id, title, status, updated_at')
+    .eq('reporter_telegram_id', telegramUserId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  if (error || !tickets || tickets.length === 0) {
+    await sendTelegramMessage(chatId, `📭 Bạn chưa có ticket nào được ghi nhận.`, replyToMessageId)
+    return
+  }
+
+  let text = `📋 <b>Ticket của bạn (${tickets.length} gần nhất)</b>\n\n`
+  for (const t of tickets) {
+    const meta = STATUS_META[t.status as TicketStatus] || { label: t.status }
+    const cleanTitle = (t.title as string).replace('[Needs Review]', '').trim()
+    text += `#${t.id} - ${cleanTitle} - <b>${meta.label}</b>\n`
+  }
+
+  await sendTelegramMessage(chatId, text, replyToMessageId)
 }
 
 async function sendTelegramMessage(chatId: number, text: string, replyToMessageId?: number) {
