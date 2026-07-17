@@ -30,6 +30,12 @@ async function processMessage(msg: any) {
   const parsed = await parseTicketFromText(msg.text)
   console.log(`[PIPELINE] [2. parsed] result=`, parsed)
   
+  if (parsed.is_off_topic) {
+    console.log(`[PIPELINE] [3. off_topic_ignored] telegram_message_id=${msg.message_id}`)
+    await sendTelegramMessage(msg.chat.id, `👋 Chào bạn, bot IT Support chỉ tiếp nhận các yêu cầu liên quan đến máy tính, mạng, phần mềm hoặc cấp quyền. Xin vui lòng mô tả vấn đề IT bạn đang gặp phải nhé!`, msg.message_id)
+    return
+  }
+
   let title = parsed.title || 'No Title'
   let description = parsed.description || msg.text
   let priority = parsed.priority || 'Medium'
@@ -40,6 +46,7 @@ async function processMessage(msg: any) {
   }
 
   const reporterName = msg.from?.first_name || msg.from?.username || 'Telegram User'
+  const reporterId = msg.from?.id || 'Unknown'
 
   // 2. Save to Supabase
   const supabase = createAdminClient()
@@ -55,7 +62,7 @@ async function processMessage(msg: any) {
       telegram_message_id: msg.message_id,
       original_text: msg.text,
       status: 'New'
-    }])
+    }]).select()
 
   if (error) {
     // If it's a unique violation for telegram_message_id, it's just a duplicate retry, ignore.
@@ -66,10 +73,16 @@ async function processMessage(msg: any) {
       await sendTelegramMessage(msg.chat.id, `❌ Đã có lỗi xảy ra khi lưu ticket. Vui lòng thử lại sau.`, msg.message_id)
     }
   } else {
-    console.log(`[PIPELINE] [3. saved] Ticket created successfully for message ${msg.message_id}`)
+    const ticketId = data && data[0] ? data[0].id : 'N/A'
+    console.log(`[PIPELINE] [3. saved] Ticket ${ticketId} created successfully for message ${msg.message_id}`)
     console.log(`[PIPELINE] [4. notified] Realtime channel will notify connected clients`)
     
-    let responseText = `✅ <b>Ticket đã được ghi nhận!</b>\n\n`
+    // Format Vietnamese Date/Time
+    const nowStr = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+
+    let responseText = `✅ <b>Ticket #${ticketId} đã được ghi nhận!</b>\n\n`
+    responseText += `<b>Thời gian:</b> ${nowStr}\n`
+    responseText += `<b>Người dùng:</b> ${reporterName} (ID: <code>${reporterId}</code>)\n`
     responseText += `<b>Tiêu đề:</b> ${title}\n`
     responseText += `<b>Mức độ:</b> ${priority}\n`
     responseText += `<b>Phân loại:</b> ${category}\n`

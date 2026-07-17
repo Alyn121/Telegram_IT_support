@@ -12,20 +12,21 @@ Output JSON format bắt buộc:
   "description": string (Giữ nguyên hoặc tóm tắt ý chính),
   "priority": "Low" | "Medium" | "High" | "Critical",
   "category": "Hardware" | "Software" | "Network" | "Account" | "Other",
-  "needs_review": boolean (true nếu bạn không chắc chắn hoặc thiếu thông tin)
+  "needs_review": boolean (true nếu bạn không chắc chắn hoặc thiếu thông tin),
+  "is_off_topic": boolean (true nếu tin nhắn không liên quan đến công việc hỗ trợ IT, ví dụ: chào hỏi, tán gẫu)
 }
 
 Ví dụ 1:
 User: "Máy tính của em bị xanh màn hình không khởi động được"
-AI: {"title":"Máy tính xanh màn hình","description":"Máy tính bị xanh màn hình không khởi động được","priority":"High","category":"Hardware","needs_review":false}
+AI: {"title":"Máy tính xanh màn hình","description":"Máy tính bị xanh màn hình không khởi động được","priority":"High","category":"Hardware","needs_review":false,"is_off_topic":false}
 
 Ví dụ 2:
 User: "Không vào được wifi ở tầng 3"
-AI: {"title":"Mất kết nối WiFi tầng 3","description":"Không vào được wifi ở tầng 3","priority":"Medium","category":"Network","needs_review":false}
+AI: {"title":"Mất kết nối WiFi tầng 3","description":"Không vào được wifi ở tầng 3","priority":"Medium","category":"Network","needs_review":false,"is_off_topic":false}
 
 Ví dụ 3:
-User: "Quên mật khẩu email công ty"
-AI: {"title":"Quên mật khẩu email","description":"Quên mật khẩu email công ty","priority":"Low","category":"Account","needs_review":false}
+User: "Trời hôm nay đẹp quá nhỉ, đi cafe không?"
+AI: {"title":"Off topic","description":"","priority":"Low","category":"Other","needs_review":false,"is_off_topic":true}
 
 Bây giờ hãy phân tích tin nhắn sau:
 User: "${text}"
