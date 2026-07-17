@@ -13,7 +13,7 @@ async function processMessage(msg: any) {
   console.log("Received message:", msg.text);
   // We will call our local API endpoint for processing to simulate webhook
   try {
-    const res = await fetch('http://localhost:3000/api/telegram', {
+    const res = await fetch('http://localhost:4000/api/telegram', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: msg })

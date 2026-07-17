@@ -63,9 +63,39 @@ async function processMessage(msg: any) {
       console.log(`[PIPELINE] [3. duplicate_ignored] telegram_message_id=${msg.message_id}`)
     } else {
       console.error(`[PIPELINE] [3. saved_error]`, error)
+      await sendTelegramMessage(msg.chat.id, `❌ Đã có lỗi xảy ra khi lưu ticket. Vui lòng thử lại sau.`, msg.message_id)
     }
   } else {
     console.log(`[PIPELINE] [3. saved] Ticket created successfully for message ${msg.message_id}`)
     console.log(`[PIPELINE] [4. notified] Realtime channel will notify connected clients`)
+    
+    let responseText = `✅ <b>Ticket đã được ghi nhận!</b>\n\n`
+    responseText += `<b>Tiêu đề:</b> ${title}\n`
+    responseText += `<b>Mức độ:</b> ${priority}\n`
+    responseText += `<b>Phân loại:</b> ${category}\n`
+    if (parsed.needs_review) {
+      responseText += `\n<i>⚠️ AI không chắc chắn về nội dung này, IT sẽ review lại chi tiết.</i>`
+    }
+    await sendTelegramMessage(msg.chat.id, responseText, msg.message_id)
+  }
+}
+
+async function sendTelegramMessage(chatId: number, text: string, replyToMessageId?: number) {
+  const token = process.env.TELEGRAM_BOT_TOKEN
+  if (!token) return
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: text,
+        reply_to_message_id: replyToMessageId,
+        parse_mode: 'HTML'
+      })
+    })
+  } catch (err) {
+    console.error("Failed to send telegram reply:", err)
   }
 }
